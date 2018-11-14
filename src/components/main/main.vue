@@ -34,6 +34,7 @@
   </Layout>
 </template>
 <script>
+// import Main from '@/components/main'
 import SideMenu from './components/side-menu'
 import HeaderBar from './components/header-bar'
 import TagsNav from './components/tags-nav'
@@ -99,7 +100,8 @@ export default {
       'setTagNavList',
       'addTag',
       'setLocal',
-      'setHomeRoute'
+      'setHomeRoute',
+      'initRouters'
     ]),
     ...mapActions([
       'handleLogin'
@@ -156,6 +158,13 @@ export default {
     /**
      * @description 初始化设置面包屑导航和标签导航
      */
+    // // 初始化routers
+    // // code
+    // this.initRouters(
+    //   [
+
+    //   ]
+    // )
     this.setTagNavList()
     this.setHomeRoute(routers)
     this.addTag({

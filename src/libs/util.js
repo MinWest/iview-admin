@@ -1,12 +1,14 @@
 import Cookies from 'js-cookie'
 // cookie保存的天数
 import config from '@/config'
+import Main from '@/components/main'
+import lazyLoading from '@/libs/lazyLoading'
 import { forEach, hasOneOf, objEqual } from '@/libs/tools'
 
 export const TOKEN_KEY = 'token'
 
 export const setToken = (token) => {
-  Cookies.set(TOKEN_KEY, token, {expires: config.cookieExpires || 1})
+  Cookies.set(TOKEN_KEY, token, { expires: config.cookieExpires || 1 })
 }
 
 export const getToken = () => {
@@ -59,7 +61,7 @@ export const getBreadCrumbList = (route, homeRoute) => {
   let res = routeMetched.filter(item => {
     return item.meta === undefined || !item.meta.hideInBread
   }).map(item => {
-    let meta = {...item.meta}
+    let meta = { ...item.meta }
     if (meta.title && typeof meta.title === 'function') meta.title = meta.title(route)
     let obj = {
       icon: (item.meta && item.meta.icon) || '',
@@ -71,12 +73,12 @@ export const getBreadCrumbList = (route, homeRoute) => {
   res = res.filter(item => {
     return !item.meta.hideInMenu
   })
-  return [{...homeItem, to: homeRoute.path}, ...res]
+  return [{ ...homeItem, to: homeRoute.path }, ...res]
 }
 
 export const getRouteTitleHandled = (route) => {
-  let router = {...route}
-  let meta = {...route.meta}
+  let router = { ...route }
+  let meta = { ...route.meta }
   let title = ''
   if (meta.title) {
     if (typeof meta.title === 'function') title = meta.title(router)
@@ -341,4 +343,31 @@ export const localSave = (key, value) => {
 
 export const localRead = (key) => {
   return localStorage.getItem(key) || ''
+}
+
+/**
+ * 初始化routers
+ * @param {*} array
+ */
+export const initDynamicRouter = (array) => {
+  console.log(array)
+  let reinstallComponent = (item) => {
+    console.log(item.component)
+    if (item.component === 'main') {
+      item.component = Main
+    } else {
+      item.component = lazyLoading(item.component)
+      // item.component = (resolve) => { require(['@/view/excel' + item.component + '.vue'], resolve) }
+    }
+    if (item.children) {
+      item.children.forEach((citem, index) => {
+        reinstallComponent(citem)
+      })
+    }
+  }
+  array.forEach((item, index) => {
+    reinstallComponent(item)
+  })
+  console.log(array)
+  return array
 }

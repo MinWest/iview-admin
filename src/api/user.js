@@ -21,6 +21,15 @@ export const getUserInfo = (token) => {
     method: 'get'
   })
 }
+export const getUserAccessInfo = (token) => {
+  return axios.request({
+    url: 'get_access_info',
+    params: {
+      token
+    },
+    method: 'get'
+  })
+}
 
 export const logout = (token) => {
   return axios.request({

@@ -2,6 +2,7 @@ import {
   login,
   logout,
   getUserInfo,
+  getUserAccessInfo, // 获取用户可访问的菜单列表
   getMessage,
   getContentByMsgId,
   hasRead,
@@ -11,6 +12,7 @@ import {
 import { setToken, getToken } from '@/libs/util'
 
 export default {
+  // namespaced: true,
   state: {
     userName: '',
     userId: '',
@@ -18,6 +20,7 @@ export default {
     token: getToken(),
     access: '',
     hasGetInfo: false,
+    hasGetAccessInfo: false,
     messageUnreadList: [],
     messageReadedList: [],
     messageTrashList: [],
@@ -42,6 +45,9 @@ export default {
     },
     setHasGetInfo (state, status) {
       state.hasGetInfo = status
+    },
+    setHasGetAccessInfo (state, status) {
+      state.hasGetAccessInfo = status
     },
     setMessageUnreadList (state, list) {
       state.messageUnreadList = list
@@ -69,7 +75,7 @@ export default {
   },
   actions: {
     // 登录
-    handleLogin ({ commit }, {userName, password}) {
+    handleLogin ({ commit }, { userName, password }) {
       userName = userName.trim()
       return new Promise((resolve, reject) => {
         login({
@@ -101,9 +107,10 @@ export default {
       })
     },
     // 获取用户相关信息
-    getUserInfo ({ state, commit }) {
+    getUserInfo ({ state, commit, rootState }) {
       return new Promise((resolve, reject) => {
         try {
+          console.log('getUserInfo...')
           getUserInfo(state.token).then(res => {
             const data = res.data
             commit('setAvator', data.avator)
@@ -111,6 +118,26 @@ export default {
             commit('setUserId', data.user_id)
             commit('setAccess', data.access)
             commit('setHasGetInfo', true)
+            resolve(data)
+          }).catch(err => {
+            reject(err)
+          })
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
+    getUserAccess ({ state, commit, rootState }) {
+      // 登录成功后拉取用户权限列表
+      return new Promise((resolve, reject) => {
+        try {
+          console.log('getUserInfo...')
+          getUserAccessInfo(state.token).then(res => {
+            const data = res.data.data
+            commit('setHasGetAccessInfo', true)
+            commit('initRouters',
+              data,
+              { root: true })
             resolve(data)
           }).catch(err => {
             reject(err)

@@ -12,6 +12,8 @@ import installPlugin from '@/plugin'
 import 'iview/dist/styles/iview.css'
 import './index.less'
 import '@/assets/icons/iconfont.css'
+import { getToken, localSave, localRead } from '@/libs/util'
+
 // 实际打包时应该不引入mock
 /* eslint-disable */
 if (process.env.NODE_ENV !== 'production') require('@/mock')
@@ -35,12 +37,19 @@ Vue.prototype.$config = config
  * 注册指令
  */
 importDirective(Vue)
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
   i18n,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  created () {
+    // 加载本地用户菜单
+    if(getToken()){
+      console.log('has login ');
+      console.log('重新拉取菜单数据')
+      store.dispatch('initRoutersAction',null,{root:true})
+    }
+  }
 })

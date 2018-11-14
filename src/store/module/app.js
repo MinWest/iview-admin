@@ -9,13 +9,16 @@ import {
   routeEqual,
   getRouteTitleHandled,
   localSave,
-  localRead
+  localRead,
+  getToken,
+  initDynamicRouter
 } from '@/libs/util'
 import beforeClose from '@/router/before-close'
 import { saveErrorLogger } from '@/api/data'
 import router from '@/router'
 import routers from '@/router/routers'
 import config from '@/config'
+import { getUserAccessInfo } from '@/api/user'
 const { homeName } = config
 
 const closePage = (state, route) => {
@@ -27,7 +30,9 @@ const closePage = (state, route) => {
 }
 
 export default {
+  // namespaced: true,
   state: {
+    userMenuList: [],
     breadCrumbList: [],
     tagNavList: [],
     homeRoute: {},
@@ -36,10 +41,25 @@ export default {
     hasReadErrorPage: false
   },
   getters: {
-    menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access),
+    menuList: (state, getters, rootState) => {
+      let allRouters = state.userMenuList.concat(routers)
+      // console.log('-------------')
+      // console.log(allRouters)
+      // console.log(routers)
+      // console.log(state.userMenuList)
+      // console.log('-------------')
+      return getMenuByRouter(allRouters, rootState.user.access)
+    },
     errorCount: state => state.errorList.length
   },
   mutations: {
+    initRouters (state, routers) {
+      initDynamicRouter(routers)
+      console.log('initRouters...')
+      console.log(routers)
+      router.addRoutes(routers)
+      state.userMenuList = routers
+    },
     setBreadCrumb (state, route) {
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
     },
@@ -110,6 +130,34 @@ export default {
       saveErrorLogger(info).then(() => {
         commit('addError', data)
       })
+    },
+    initRoutersAction ({ commit, rootState }, array) {
+      commit('initRouters', array)
+      dispatch('setTagNavList')
+      dispatch('setHomeRoute', routers)
+      commit('addTag', {
+        route: this.$store.state.app.homeRoute
+      })
+      commit('setBreadCrumb', router)
+      // // 重新拉取菜单信息
+      // let token = getToken()
+      // getUserAccessInfo(token).then((rs) => {
+      //   if (rs.data.data && rs.data.data.length > 0) {
+      //     console.log('接口返回菜单权限数据')
+      //     commit('initRouters', rs.data.data)
+      //     dispatch('setTagNavList')
+      //     dispatch('setHomeRoute', routers)
+      //     commit('addTag', {
+      //       route: this.$store.state.app.homeRoute
+      //     })
+      //     commit('setBreadCrumb', router)
+      //   } else {
+      //     console.log(rs)
+      //     console.log('接口返回菜单权限数据weikong')
+      //   }
+      // }).catch(rs => {
+
+      // })
     }
   }
 }
