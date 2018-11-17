@@ -54,11 +54,13 @@ export default {
   },
   mutations: {
     initRouters (state, routers) {
-      initDynamicRouter(routers)
-      console.log('initRouters...')
-      console.log(routers)
-      router.addRoutes(routers)
-      state.userMenuList = routers
+      if(routers && routers.length > 0){
+        initDynamicRouter(routers)
+        console.log('initRouters...')
+        console.log(routers)
+        router.addRoutes(routers)
+        state.userMenuList = routers
+      }
     },
     setBreadCrumb (state, route) {
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
@@ -131,14 +133,23 @@ export default {
         commit('addError', data)
       })
     },
-    initRoutersAction ({ commit, rootState }, array) {
-      commit('initRouters', array)
-      dispatch('setTagNavList')
-      dispatch('setHomeRoute', routers)
-      commit('addTag', {
-        route: this.$store.state.app.homeRoute
-      })
-      commit('setBreadCrumb', router)
+    initRoutersAction ({ dispatch,commit, rootState }, array) {
+      if(!array){
+        array = localRead('menuList') || []
+      }
+      if(array && array.length > 0){
+        commit('initRouters', array)
+        dispatch('setTagNavList')
+        dispatch('setHomeRoute', routers)
+        commit('addTag', {
+          route: rootState.app.homeRoute
+        })
+        commit('setBreadCrumb', router)
+      }else{
+        console.log('no routers can be intall')
+      }
+      
+      
       // // 重新拉取菜单信息
       // let token = getToken()
       // getUserAccessInfo(token).then((rs) => {

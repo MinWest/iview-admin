@@ -345,11 +345,41 @@ export const localRead = (key) => {
   return localStorage.getItem(key) || ''
 }
 
+
+const errPageRouter = ()=>{
+  return [
+    {
+      path: '/401',
+      name: 'error_401',
+      meta: {
+        hideInMenu: true
+      },
+      component: () => import('@/view/error-page/401.vue')
+    },
+    {
+      path: '/500',
+      name: 'error_500',
+      meta: {
+        hideInMenu: true
+      },
+      component: () => import('@/view/error-page/500.vue')
+    },
+    {
+      path: '*',
+      name: 'error_404',
+      meta: {
+        hideInMenu: true
+      },
+      component: () => import('@/view/error-page/404.vue')
+    }
+  ]
+}
 /**
  * 初始化routers
  * @param {*} array
  */
 export const initDynamicRouter = (array) => {
+  array.concat(errPageRouter())
   console.log(array)
   let reinstallComponent = (item) => {
     console.log(item.component)
@@ -368,6 +398,7 @@ export const initDynamicRouter = (array) => {
   array.forEach((item, index) => {
     reinstallComponent(item)
   })
+ 
   console.log(array)
   return array
 }

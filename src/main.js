@@ -49,7 +49,7 @@ new Vue({
     if(getToken()){
       console.log('has login ');
       console.log('重新拉取菜单数据')
-      store.dispatch('initRoutersAction',null,{root:true})
+      this.$store.dispatch('getUserAccess')
     }
   }
 })

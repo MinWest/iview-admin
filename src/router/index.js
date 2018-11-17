@@ -24,6 +24,7 @@ const LOGIN_PAGE_NAME = 'login'
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
   const token = getToken()
+  
   if (!token && to.name !== LOGIN_PAGE_NAME) {
     // 未登录且要跳转的页面不是登录页
     next({
@@ -38,38 +39,38 @@ router.beforeEach((to, from, next) => {
       name: homeName // 跳转到homeName页
     })
   } else {
-    console.log(store.state.user.hasGetInfo + '=' + store.state.user.hasGetAccessInfo)
-    if (store.state.user.hasGetInfo && store.state.user.hasGetAccessInfo) {
-      console.log('用户信息和权限加载完毕')
-      next()
-      // turnTo(to, store.state.user.access, next)
-    } else {
-      if (getToken()) {
-        // 已登陆用户
-
-        store.dispatch('getUserAccess', localRead('dynamic_routers'), { root: true }).then(routers => {
-          next()
-        })
-      } else {
-        next({
-          name: 'login'
-        })
-        // console.log('先去加载用户信息和权限')
-        // store.dispatch('getUserInfo', null, { root: true }).then(user => {
-        // // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
-        // // turnTo(to, user.access, next)
-        // // 获取用户权限列表（路由列表）
-        //   store.dispatch('getUserAccess', null, { root: true }).then(routers => {
-        //     next()
-        //   })
-        // }).catch(() => {
-        //   setToken('')
-        //   next({
-        //     name: 'login'
-        //   })
-        // })
-      }
-    }
+    next()
+    // if(store.state.user.hasGetAccessInfo){
+    //   if(!store.state.user.hasGetInfo){
+    //     // 这里要重新加载用户信息
+    //     // 可以存到客户端的localstorage中
+    //   }
+    //   store.commit('setHasGetInfo',true)
+    //   console.log(store.state.user.hasGetInfo + '=' + store.state.user.hasGetAccessInfo)
+    //   if (store.state.user.hasGetInfo && store.state.user.hasGetAccessInfo) {
+    //     console.log('用户信息和权限已经加载过了')
+    //     next()
+    //     // turnTo(to, store.state.user.access, next)
+    //   } else {
+    //     if (getToken()) {
+    //       // 已登陆用户
+    //       console.log('获取到用户的token信息，直接去加载用户的权限菜单')
+    //       store.dispatch('getUserAccess')
+    //       next()
+    //     } else {
+    //       console.log('没有token信息，跳转到登录页')
+    //       next({
+    //         name: LOGIN_PAGE_NAME
+    //       })
+    //     }
+    //   }
+    // }else{
+    //   setToken("")
+    //   next({
+    //     name: LOGIN_PAGE_NAME
+    //   })
+    // }
+    
   }
 })
 
