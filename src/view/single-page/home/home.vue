@@ -25,6 +25,18 @@
         <example style="height: 310px;"/>
       </Card>
     </Row>
+    <Row :gutter="20" style="margin-top: 10px;">
+      <i-col :md="24" :lg="8" style="margin-bottom: 20px;">
+        <Card shadow>
+          <chart-pie style="height: 300px;" :value="pieData" text="用户访问来源"></chart-pie>
+        </Card>
+      </i-col>
+      <i-col :md="24" :lg="16" style="margin-bottom: 20px;">
+        <Card shadow>
+          <chart-bar style="height: 300px;" :value="barData" text="每周用户活跃量"/>
+        </Card>
+      </i-col>
+    </Row>
   </div>
 </template>
 

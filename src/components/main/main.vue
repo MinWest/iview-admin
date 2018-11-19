@@ -1,24 +1,29 @@
 <template>
   <Layout style="height: 100%" class="main">
-    <Sider hide-trigger collapsible :width="256" :collapsed-width="64" v-model="collapsed" class="left-sider" :style="{overflow: 'hidden'}">
-      <side-menu accordion ref="sideMenu" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage" :menu-list="menuList">
-        <!-- 需要放在菜单上面的内容，如Logo，写在side-menu标签内部，如下 -->
-        <div class="logo-con">
-          <img v-show="!collapsed" :src="maxLogo" key="max-logo" />
-          <img v-show="collapsed" :src="minLogo" key="min-logo" />
-        </div>
-      </side-menu>
-    </Sider>
-    <Layout>
-      <Header class="header-con">
-        <header-bar :collapsed="collapsed" @on-coll-change="handleCollapsedChange">
-          <user :message-unread-count="messageUnreadCount" :user-avator="userAvator"/>
-          <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
-          <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader" :has-read="hasReadErrorPage" :count="errorCount"></error-store>
-          <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/>
-        </header-bar>
-      </Header>
-      <Content class="main-content-con">
+    <Header class="header-con">
+      <header-bar :collapsed="collapsed" @on-coll-change="handleCollapsedChange">
+        <user :message-unread-count="messageUnreadCount" :user-avator="userAvator"/>
+        <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
+        <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader" :has-read="hasReadErrorPage" :count="errorCount"></error-store>
+        <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/>
+      </header-bar>
+    </Header>
+    <Layout style="height: calc(100% - 60px)">
+      <Sider hide-trigger collapsible :width="256" 
+        :collapsed-width="64" v-model="collapsed" class="left-sider" 
+        :style="{overflow: 'hidden'}"
+        @mouseover.native="hoverMe(false)"
+        @mouseleave.native="hoverMe(true)"
+        @click.native="console.log('click')">
+        <side-menu accordion ref="sideMenu" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage" :menu-list="menuList">
+          <!-- 需要放在菜单上面的内容，如Logo，写在side-menu标签内部，如下 -->
+          <div class="logo-con">
+            <img v-show="!collapsed" :src="maxLogo" key="max-logo" />
+            <img v-show="collapsed" :src="minLogo" key="min-logo" />
+          </div>
+        </side-menu>
+      </Sider>
+      <Content class="main-content-con" style="height:100%">
         <Layout class="main-layout-con">
           <div class="tag-nav-wrapper">
             <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag"/>
@@ -140,6 +145,10 @@ export default {
     },
     handleClick (item) {
       this.turnToPage(item)
+    },
+    hoverMe(flag){
+      console.log('hover now');
+      this.collapsed = flag;
     }
   },
   watch: {
@@ -158,13 +167,6 @@ export default {
     /**
      * @description 初始化设置面包屑导航和标签导航
      */
-    // // 初始化routers
-    // // code
-    // this.initRouters(
-    //   [
-
-    //   ]
-    // )
     this.setTagNavList()
     this.setHomeRoute(routers)
     this.addTag({
@@ -179,6 +181,13 @@ export default {
         name: this.$config.homeName
       })
     }
+    /**
+     * 添加左侧菜单hover事件
+     */
+    // console.log($)
+    // $(".left-sider").hover(function() {
+    //   console.log('aaaaaaaaaaaaaaaaaaaaaaaa')
+    // })
   }
 }
 </script>
